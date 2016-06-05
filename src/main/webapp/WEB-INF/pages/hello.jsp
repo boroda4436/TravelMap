@@ -1,38 +1,47 @@
 <html>
 <head>
-	<%--<link rel="stylesheet" href="/resources/css/main.css" type="text/css">--%>
-		<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.2/jquery.min.js"></script>
-		<script src="http://code.jquery.com/ui/1.10.2/jquery-ui.js"></script>
-		<script src="https://maps.googleapis.com/maps/api/js?callback=initMap&key=AIzaSyCsx14zSe9l2m-dbf0T_OmFgtz-HLatWgU"
-				async defer></script>
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.2/jquery.min.js"></script>
+	<script src="http://code.jquery.com/ui/1.10.2/jquery-ui.js"></script>
+	<link rel="stylesheet" href="resources/css/main.css" type="text/css">
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap-theme.min.css" integrity="sha384-fLW2N01lMqjakBkx3l/M9EahuwpSfeNvV63J5ezn3uZzapT0u7EYsXMjQV+0En5r" crossorigin="anonymous">
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" crossorigin="anonymous"></script>
+	<script src="https://maps.googleapis.com/maps/api/js?callback=initMap&key=AIzaSyCsx14zSe9l2m-dbf0T_OmFgtz-HLatWgU" async defer></script>
 </head>
 <body>
-	<h1>Welcome to TravelMap, ${userName}</h1>
 <div class="header">
-	<a href="addLocation">click me!</a>
-	<a href="addLocation">click me1!</a>
-	<button id="postLocation">postLocation</button>
-	<button id="link1">Add point</button>
+	<h1>Welcome to TravelMap, ${userName}</h1>
+	<button class="btn-default" id="link1">Add point</button>
 </div>
-<div class="container">
-	<div id="map" style="width: 500px; height: 400px"></div>
-	<div id="usersInfo">
-		<p id="usersHeader"></p>
-	</div>
-	<div >
-		City: <input type="text" id="city" name="city"/>
-		<br />
-		Longitude: <input type="text" id="longitude" name="longitude" />
-		<br />
-		Latitude: <input type="text" id="latitude" name="latitude" />
-		<br />
-		Country: <input type="text" id="country" name="country" />
-		<br />
-		Country code: <input type="text" id="countryCode" name="countryCode" />
-		<br />
-		Was visited: <input type="checkbox" id="wasVisited" name="wasVisited" />
-		<p id="dateLine">Country code: <input type="text" id="date" name="date" /></p>
-		<button id="sendLocationData">Submit</button>
+<div class="col-md-12 container">
+	<div class="col-md-8"><div id="map" style="width: 100%"></div></div>
+	<div class="col-md-4">
+		<div class="col-md-3">City:</div>
+		<input class="col-md-9" type="text" id="city" name="city"/>
+
+		<div class="col-md-3">Longitude:</div>
+		<input class="col-md-9" type="text" id="longitude" name="longitude"/>
+
+		<div class="col-md-3">Latitude:</div>
+		<input class="col-md-9" type="text" id="latitude" name="latitude"/>
+
+		<div class="col-md-3">Country:</div>
+		<input class="col-md-9" type="text" id="country" name="country"/>
+
+		<div class="col-md-3">Country code:</div>
+		<input class="col-md-9" type="text" id="countryCode" name="countryCode"/>
+
+		<div class="col-md-12">
+			<div class="col-md-3">Was visited:</div>
+			<div class="col-md-9"><input type="checkbox" id="wasVisited" name="wasVisited"></div>
+		</div>
+		<div class="col-md-12" id="dateLine">
+			<div class="col-md-3">Country code:</div>
+			<input class="col-md-9" type="text" id="datepicker"/>
+		</div>
+		<div class="col-md-12">
+			<button class="btn-default" id="sendLocationData">Submit</button>
+		</div>
 	</div>
 	<%--need for displaying information about existed location--%>
 	<%--<div id="locationInfo">--%>
@@ -130,13 +139,13 @@
 				$('#countryCode').val('');
 				$('#city').val('');
 				$('#country').val('');
-				$('#date').val('');
+				$('#datepicker').val('');
 			});
 
 		}
 	}
 	$(document).ready(function(){
-		$('#date').datepicker();
+		$('#datepicker').datepicker();
 		$('#dateLine').hide();
 		$('#wasVisited').click(function(){
 			if($('#wasVisited').is(':checked')){
@@ -179,7 +188,7 @@
 				"countryCode":$('#countryCode').val(),
 				"wasVisited":$('#wasVisited').is(':checked'),
 				"locationUUID":guid(),
-				"date":$('#date').val(),
+				"date":$('#datepicker').val(),
 				"type": "placeLocation"}
 			$.ajax({
 				'type': 'POST',
