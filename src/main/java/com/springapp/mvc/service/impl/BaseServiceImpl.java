@@ -30,7 +30,6 @@ public abstract class BaseServiceImpl implements BaseService {
                         .key(keys)
                         .includeDocsOrdered()
                         .stale(Stale.FALSE);
-
         return fromViewWithoutParsing(viewQuery);
     }
     @Override
