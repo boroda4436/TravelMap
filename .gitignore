@@ -1,0 +1,10 @@
+*.dll
+*.iml
+
+target/**
+.idea/**
+target*/
+.idea*/
+target/SpringMVC/WEB-INF/classes/com/springapp/mvc/db/*
+target/SpringMVC/WEB-INF/classes/com/springapp/mvc/service
+target/SpringMVC/WEB-INF/classes/com/springapp/mvc/service/*
