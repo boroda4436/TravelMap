@@ -7,6 +7,6 @@ import java.util.List;
 /**
  * Created by Bohdan on 02.06.2016.
  */
-public interface PlaceLocationService extends BaseService {
+public interface LocationService extends BaseService {
     List<JsonDocument> getAll();
 }

@@ -32,6 +32,17 @@ public abstract class BaseServiceImpl implements BaseService {
                         .stale(Stale.FALSE);
         return fromViewWithoutParsing(viewQuery);
     }
+
+    @Override
+    public List<JsonDocument> fromViewWithStringKey(String key, String designDocument, String view) {
+        ViewQuery viewQuery =
+                ViewQuery.from(designDocument, view)
+                        .key(key)
+                        .includeDocsOrdered()
+                        .stale(Stale.FALSE);
+        return fromViewWithoutParsing(viewQuery);
+    }
+
     @Override
     public List<JsonDocument> fromViewWithoutParsing(ViewQuery viewQuery) {
 

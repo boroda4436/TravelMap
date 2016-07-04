@@ -12,5 +12,6 @@ import java.util.List;
 public interface BaseService {
     List<JsonDocument> fromViewWithoutParsing(ViewQuery viewQuery);
     List<JsonDocument> fromViewWithKeys(JsonArray keys, String designDocument, String view);
+    List<JsonDocument> fromViewWithStringKey(String key, String designDocument, String view);
     List<JsonDocument> fromViewWithoutParsing(String designDocument, String view);
 }

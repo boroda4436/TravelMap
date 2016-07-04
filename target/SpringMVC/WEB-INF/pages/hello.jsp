@@ -1,9 +1,9 @@
 <html>
 <head>
 	<script src="https://maps.googleapis.com/maps/api/js?callback=initMap&key=AIzaSyCsx14zSe9l2m-dbf0T_OmFgtz-HLatWgU&language=en" async defer></script>
-	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.2/jquery.min.js"></script>
 	<script src="http://code.jquery.com/ui/1.10.2/jquery-ui.js"></script>
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
 	<script src="resources/lib/js/bootstrap-datepicker.js"></script>
 
 	<link rel="stylesheet" href="resources/css/main.css" type="text/css">
@@ -16,34 +16,40 @@
 <body>
 <div class="header">
 	<h1>Welcome to TravelMap, ${userName}</h1>
-	<button class="btn-default" id="link1">Add point</button>
+	<button class="btn-default" id="addLocationBtn">Add point</button>
 </div>
 <div class="col-md-12 container">
 	<div class="col-md-8"><div id="map" style="width: 100%; height: 500px"></div></div>
-
-	<div class="col-md-4" id="addLocationDiv">
-		<div class="col-md-3">City:</div>
-		<input class="col-md-9" type="text" id="city" name="city"/>
-
-		<div class="col-md-3">Longitude:</div>
-		<input class="col-md-9" type="text" id="longitude" name="longitude"/>
-
-		<div class="col-md-3">Latitude:</div>
-		<input class="col-md-9" type="text" id="latitude" name="latitude"/>
-
-		<div class="col-md-3">Country:</div>
-		<input class="col-md-9" type="text" id="country" name="country"/>
-
-		<div class="col-md-3">Country code:</div>
-		<input class="col-md-9" type="text" id="countryCode" name="countryCode"/>
-		<div id="dateLine">
-			<div class="col-md-3">Date visited:</div>
-			<input class="col-md-9 datepicker" type="date" id="datepicker"/>
+	<div class="col-md-4" style="display: none" id="addLocationDiv">
+		<div class="col-md-12">
+			<div class="col-md-3">City:</div>
+			<input class="col-md-9" type="text" id="city" name="city"/>
+		</div>
+		<div class="col-md-12">
+			<div class="col-md-3">Longitude:</div>
+			<input class="col-md-9" type="text" id="longitude" name="longitude"/>
+		</div>
+		<div class="col-md-12">
+			<div class="col-md-3">Latitude:</div>
+			<input class="col-md-9" type="text" id="latitude" name="latitude"/>
+		</div>
+		<div class="col-md-12">
+			<div class="col-md-3">Country:</div>
+			<input class="col-md-9" type="text" id="country" name="country"/>
+		</div>
+		<div class="col-md-12">
+			<div class="col-md-3">Country code:</div>
+			<input class="col-md-9" type="text" id="countryCode" name="countryCode"/>
 		</div>
 		<div class="col-md-12">
 			<div class="col-md-3">Was visited:</div>
 			<div class="col-md-9"><input type="checkbox" id="wasVisited" name="wasVisited"></div>
 		</div>
+		<div id="dateLine" class="col-md-12">
+			<div class="col-md-3">Date visited:</div>
+			<input class="col-md-9 datepicker" type="date" id="datepicker"/>
+		</div>
+
 
 		<div class="col-md-12">
 			<button class="btn-default" id="sendLocationData">Submit</button>
@@ -51,20 +57,36 @@
 	</div>
 	<%--need for displaying information about existed location--%>
 	<div class="col-md-4" style="display: none" id="locationInfo">
-		City: <input type="text" id="cityInfo"/>
-		<br />
-		Longitude: <input type="text" id="longitudeInfo"/>
-		<br />
-		Latitude: <input type="text" id="latitudeInfo"/>
-		<br />
-		Country: <input type="text" id="countryInfo"/>
-		<br />
-		Country code: <input type="text" id="countryCodeInfo"/>
-		<br />
-		Was visited: <input type="checkbox" id="wasVisitedInfo"/>
-		<br />
-		Country code: <input type="text" id="dateInfo"/>
+		<div class="col-md-12">
+			<div class="col-md-3">City:</div>
+			<input class="col-md-9" type="text" id="cityInfo"/>
+		</div>
+		<div class="col-md-12">
+			<div class="col-md-3">Longitude:</div>
+			<input class="col-md-9" type="text" id="longitudeInfo" name="longitude"/>
+		</div>
+		<div class="col-md-12">
+			<div class="col-md-3">Latitude:</div>
+			<input class="col-md-9" type="text" id="latitudeInfo" name="latitude"/>
+		</div>
+		<div class="col-md-12">
+			<div class="col-md-3">Country:</div>
+			<input class="col-md-9" type="text" id="countryInfo" name="country"/>
+		</div>
+		<div class="col-md-12">
+			<div class="col-md-3">Country code:</div>
+			<input class="col-md-9" type="text" id="countryCodeInfo" name="countryCode"/>
+		</div>
+		<div class="col-md-12">
+			<div class="col-md-3">Was visited:</div>
+			<div class="col-md-9"><input type="checkbox" id="wasVisitedInfo" name="wasVisited"></div>
+		</div>
+		<div id="dateLineInfo" class="col-md-12">
+			<div class="col-md-3">Date visited:</div>
+			<input class="col-md-9 datepicker" type="date" id="dateInfo"/>
+		</div>
 
+		<button id="showAllLocation">allLocations</button>
 	</div>
     <div class="col-md-4" id="allLocations">
 
@@ -76,23 +98,26 @@
 </body>
 <script>
 	function initMap() {
-		alert("Ok!");
 		// In the following example, markers appear when the user clicks on the map.
 		// Each marker is labeled with a single alphabetical character.
 		var labels = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
 		var labelIndex = 0;
 		var myLatLng = {lat: -25.363, lng: 131.044};
 		var mapDiv = document.getElementById('map');
+		var centerCoordinates = {lat: 50.449335, lng: 30.525155};
 		var map = new google.maps.Map(mapDiv, {
-			center: {lat: 50.449335, lng: 30.525155},
-			zoom: 6
+			center: centerCoordinates,
+			zoom: 5
 		});
 		var geocoder = new google.maps.Geocoder;
 		// This event listener calls addMarker() when the map is clicked.
 
-		$('#link1').click(function(){
+		$('#addLocationBtn').click(function(){
+			$('#allLocations').hide();
+			$('#addLocationDiv').show();
+			$('#locationInfo').hide();
 			google.maps.event.addListenerOnce(map, 'click', function(event) {
-				addMarker(event.latLng, map);
+				addMarker(event.latLng, map, null);
 				$('#longitude').val(event.latLng.lng().toFixed(6));
 				$('#latitude').val(event.latLng.lat().toFixed(6));
 				geocoder.geocode({'location': event.latLng}, function(results, status) {
@@ -111,6 +136,13 @@
 				});
 			});
 		});
+		$('#showAllLocation').click(function () {
+			$('#allLocations').show();
+			$('#addLocationDiv').hide();
+			$('#locationInfo').hide();
+			map.setZoom(5);
+			map.setCenter(centerCoordinates);
+		});
 		var users =  ${users};
 		users.sort(function(a, b){
 			var dateDiff = new Date(b.content.content.date) - new Date(a.content.content.date);
@@ -124,19 +156,20 @@
 			if(users[i].content.content.geoLocation){
 				var location = { lat: parseFloat(users[i].content.content.geoLocation.content.latitude),
 					lng: parseFloat(users[i].content.content.geoLocation.content.longitude) }
-				addMarker(location, map);
+				addMarker(location, map, users[i].content.content.locationUUID);
                 printAllVisitedLocations(labels[labelIndex - 1], users[i]);
 			}
 		}
 
 		// Adds a marker to the map.
-		function addMarker(location, map) {
+		function addMarker(location, map, locationId) {
 			// Add the marker at the clicked location, and add the next-available label
 			// from the array of alphabetical characters.
 			var marker = new google.maps.Marker({
 				position: location,
 				label: labels[labelIndex++ % labels.length],
-				map: map
+				map: map,
+				locationId:locationId
 			});
 			marker.addListener("dblclick", function() {
 				marker.setMap(null);
@@ -147,7 +180,11 @@
 				$('#country').val('');
 				$('#datepicker').val('');
 			});
-
+			marker.addListener('click', function() {
+				map.setZoom(8);
+				map.setCenter(marker.getPosition());
+				printLocationInfo(marker.locationId, map);
+			});
 		}
 		$(document).ready(function(){
 		$('#dateLine').hide();
@@ -171,13 +208,30 @@
 		return s4() + s4() + '-' + s4() + '-' + s4() + '-' +
 				s4() + '-' + s4() + s4() + s4();
 	}
-	function printLocationInfo(location){
-		$('#longitudeInfo').val(location.content.content.geoLocation.content.longitude);
-		$('#latitudeInfo').val(location.content.content.geoLocation.content.latitude);
-		$('#countryCodeInfo').val(location.content.content.countryCode);
-		$('#cityInfo').val(location.content.content.city);
-		$('#countryInfo').val(location.content.content.country);
-		$('#dateInfo').val(location.content.content.date);
+	function printLocationInfo(locationId, map){
+		// send ajax request on server with locationId and get location from DB
+		$.ajax({
+			'type': 'POST',
+			'url': 'getLocationInfo',
+			'data': locationId,
+			'dataType': 'json',
+			'contentType': 'application/json',
+			'charset':'utf-8',
+			'success': function(response){
+				var location = response.content.content;
+				$('#longitudeInfo').val(location.geoLocation.content.longitude);
+				$('#latitudeInfo').val(location.geoLocation.content.latitude);
+				$('#countryCodeInfo').val(location.countryCode);
+				$('#cityInfo').val(location.city);
+				$('#countryInfo').val(location.country);
+				$('#dateInfo').val(location.date);
+				$('#wasVisitedInfo').prop('checked', location.wasVisited);
+			}
+		});
+		$('#allLocations').hide();
+		$('#addLocationDiv').hide();
+		$('#locationInfo').show();
+
 	}
 	function printAllVisitedLocations(marker, user){
         var container = $('#allLocations');
@@ -208,7 +262,10 @@
 				'dataType': 'json',
 				'contentType': 'application/json',
 					'charset':'utf-8',
-				'success': function(){}
+				'success': function(){
+					$('#addLocationDiv').hide();
+					$('#allLocations').show();
+				}
 			});
 		});
 	function addCity(result) {

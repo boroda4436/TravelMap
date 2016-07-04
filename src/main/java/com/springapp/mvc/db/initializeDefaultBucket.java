@@ -16,9 +16,10 @@ public class initializeDefaultBucket {
     public static final String GET_COORDINATES = "get_coordinates";
     public static final String GET_MERCHANT_LOCATIONS = "get_merchant_location";
     public static final String GET_PLACE_LOCATIONS = "get_place_location";
+    public static final String GET_LOCATION_INFO = "get_location_info";
     public static void initializeLandmarksViews(){
         BucketManager bucketManager = ConnectionManager.getBucket().bucketManager();
-        DesignDocument isExist = bucketManager.getDesignDocument("merchants");
+        DesignDocument isExist = bucketManager.getDesignDocument("landmarks");
         DesignDocument designDoc = DesignDocument.create(
                 "landmarks",
                 Arrays.asList(
@@ -36,7 +37,10 @@ public class initializeDefaultBucket {
                                 "function (doc, meta) { " +
                                         "if (doc.type == 'placeLocation') { " +
                                         "emit(meta.id, null); } }"
-                        ))
+                        ), DefaultView.create(GET_LOCATION_INFO,
+                                "function (doc, meta) { " +
+                                        "  emit(doc.locationUUID, null);" +
+                                        "}"))
                 );
         if(isExist==null) {
             bucketManager.insertDesignDocument(designDoc);

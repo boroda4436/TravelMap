@@ -1,20 +1,22 @@
 package com.springapp.mvc;
 
 import com.couchbase.client.java.document.JsonDocument;
+import com.couchbase.client.java.document.json.JsonArray;
 import com.couchbase.client.java.document.json.JsonObject;
 import com.google.gson.Gson;
-import com.springapp.mvc.db.ConnectionManager;
 import com.springapp.mvc.db.initializeDefaultBucket;
 import com.springapp.mvc.service.CrudService;
-import com.springapp.mvc.service.MerchantService;
-import com.springapp.mvc.service.PlaceLocationService;
+import com.springapp.mvc.service.LocationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import static com.springapp.mvc.db.initializeDefaultBucket.GET_LOCATION_INFO;
 
 @Controller
 @RequestMapping("/")
@@ -22,19 +24,19 @@ public class HelloController {
 	@Autowired
 	CrudService crudService;
 	@Autowired
-	PlaceLocationService placeLocationService;
+	LocationService locationService;
 
 	@RequestMapping(method = RequestMethod.GET)
 	public String printWelcome(ModelMap model) {
 //		initializeDefaultBucket.initializeLandmarksViews();
 		model.addAttribute("userName", "Bohdan");
-		model.addAttribute("users",new Gson().toJson(placeLocationService.getAll()));
+		model.addAttribute("users",new Gson().toJson(locationService.getAll()));
 		return "hello";
 	}
 	@RequestMapping(value = "addLocation",method = RequestMethod.GET)
 	public String addNewLocation(ModelMap model) {
 		model.addAttribute("message", "Hello new page");
-		placeLocationService.getAll();
+		locationService.getAll();
 		return "addLocation";
 	}
 	@RequestMapping(value = "postLocation",method = RequestMethod.POST)
@@ -43,8 +45,14 @@ public class HelloController {
 		model.addAttribute("message", "Hello new page");
 		JsonObject data = JsonObject.fromJson(jsonObject);
 		crudService.insert(JsonDocument.create("placeLocation::" + data.getString("locationUUID"), data));
-		model.addAttribute("users",new Gson().toJson(placeLocationService.getAll()));
+		model.addAttribute("users",new Gson().toJson(locationService.getAll()));
 		return "hello";
+	}
+	@ResponseBody
+	@RequestMapping(value = "getLocationInfo", method = RequestMethod.POST)
+	public JsonDocument getLocationInfo(@RequestBody String locationId, ModelMap model){
+		List<JsonDocument> list = locationService.fromViewWithStringKey(locationId,"landmarks", GET_LOCATION_INFO);
+		return list==null?null:list.get(0);
 	}
 
 }
