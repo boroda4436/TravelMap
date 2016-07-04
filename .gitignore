@@ -12,3 +12,4 @@ target/SpringMVC/WEB-INF/pages
 target/SpringMVC/WEB-INF/pages/*
 target/SpringMVC/WEB-INF/classes/com/springapp/mvc/service/impl
 target/SpringMVC/WEB-INF/classes/com/springapp/mvc/service/impl/*
+*.class
