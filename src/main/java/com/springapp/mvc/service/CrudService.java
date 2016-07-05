@@ -2,6 +2,7 @@ package com.springapp.mvc.service;
 
 import com.couchbase.client.java.document.JsonDocument;
 import com.couchbase.client.java.document.json.JsonArray;
+import com.couchbase.client.java.document.json.JsonObject;
 import com.couchbase.client.java.view.ViewQuery;
 
 import java.util.List;
@@ -12,6 +13,8 @@ import java.util.List;
 
 public interface CrudService {
     JsonDocument insert(JsonDocument doc);
+    JsonDocument update(JsonObject data);
+    JsonDocument delete(JsonObject data);
     void insertDump();
 
 }

@@ -30,22 +30,34 @@ public class HelloController {
 	public String printWelcome(ModelMap model) {
 //		initializeDefaultBucket.initializeLandmarksViews();
 		model.addAttribute("userName", "Bohdan");
-		model.addAttribute("users",new Gson().toJson(locationService.getAll()));
+		model.addAttribute("locations",new Gson().toJson(locationService.getAll()));
 		return "hello";
 	}
 	@RequestMapping(value = "addLocation",method = RequestMethod.GET)
 	public String addNewLocation(ModelMap model) {
-		model.addAttribute("message", "Hello new page");
 		locationService.getAll();
 		return "addLocation";
 	}
 	@RequestMapping(value = "postLocation",method = RequestMethod.POST)
 	public String postNewLocation(@RequestBody String jsonObject,
 										  ModelMap model) {
-		model.addAttribute("message", "Hello new page");
 		JsonObject data = JsonObject.fromJson(jsonObject);
 		crudService.insert(JsonDocument.create("placeLocation::" + data.getString("locationUUID"), data));
-		model.addAttribute("users",new Gson().toJson(locationService.getAll()));
+		model.addAttribute("locations",new Gson().toJson(locationService.getAll()));
+		return "hello";
+	}
+	@RequestMapping(value = "editLocation",method = RequestMethod.POST)
+	public String editLocation(@RequestBody String locationEdit,
+								  ModelMap model) {
+		JsonObject data = JsonObject.fromJson(locationEdit);
+		crudService.update(data);
+		return "hello";
+	}
+	@RequestMapping(value = "deleteLocation",method = RequestMethod.POST)
+	public String deleteLocation(@RequestBody String locationEdit,
+							   ModelMap model) {
+		JsonObject data = JsonObject.fromJson(locationEdit);
+		crudService.delete(data);
 		return "hello";
 	}
 	@ResponseBody

@@ -8,8 +8,10 @@ import com.couchbase.client.java.view.AsyncViewRow;
 import com.couchbase.client.java.view.Stale;
 import com.couchbase.client.java.view.ViewQuery;
 import com.springapp.mvc.db.ConnectionManager;
+import com.springapp.mvc.service.BaseService;
 import com.springapp.mvc.service.CrudService;
 import org.springframework.stereotype.Service;
+import rx.Observable;
 
 import java.util.List;
 import java.util.UUID;
@@ -18,13 +20,23 @@ import java.util.UUID;
  * Created by Bohdan on 31.05.2016.
  */
 @Service
-public class CrudServiceImpl implements CrudService {
+public class CrudServiceImpl implements CrudService  {
 
 
     @Override
     public JsonDocument insert(JsonDocument doc) {
         ConnectionManager.getBucket().insert(doc);
         return doc;
+    }
+
+    @Override
+    public JsonDocument update(JsonObject data) {
+        return  ConnectionManager.getBucket().replace(JsonDocument.create("placeLocation::" + data.getString("locationUUID"), data));
+    }
+
+    @Override
+    public JsonDocument delete(JsonObject data) {
+        return ConnectionManager.getBucket().remove("placeLocation::" + data.getString("locationUUID"));
     }
 
     @Override

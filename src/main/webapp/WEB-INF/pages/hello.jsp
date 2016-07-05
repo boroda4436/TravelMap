@@ -14,9 +14,40 @@
 
 </head>
 <body>
+<!-- Modal -->
+<div class = "modal fade" id = "myModal" tabindex = "-1" role = "dialog"
+	 aria-labelledby = "myModalLabel" aria-hidden = "true">
+
+	<div class = "modal-dialog">
+		<div class = "modal-content">
+
+			<div class = "modal-header">
+				<button type = "button" class = "close" data-dismiss = "modal" aria-hidden = "true">
+					&times;
+				</button>
+
+				<h4 class = "modal-title" id = "myModalLabel">
+					Congratulation!
+				</h4>
+			</div>
+
+			<div class = "modal-body">
+				Location was added successfully
+			</div>
+
+			<div class = "modal-footer">
+				<button type = "button" class = "btn btn-default" data-dismiss = "modal">
+					Close
+				</button>
+			</div>
+
+		</div><!-- /.modal-content -->
+	</div><!-- /.modal-dialog -->
+
+</div><!-- /.modal -->
 <div class="header">
 	<h1>Welcome to TravelMap, ${userName}</h1>
-	<button class="btn-default" id="addLocationBtn">Add point</button>
+	<button class="btn btn-default" id="addLocationBtn">Add point</button>
 </div>
 <div class="col-md-12 container">
 	<div class="col-md-8"><div id="map" style="width: 100%; height: 500px"></div></div>
@@ -52,10 +83,9 @@
 
 
 		<div class="col-md-12">
-			<button class="btn-default" id="sendLocationData">Submit</button>
+			<button class="btn btn-primary" id="sendLocationData">Submit</button>
 		</div>
 	</div>
-	<%--need for displaying information about existed location--%>
 	<div class="col-md-4" style="display: none" id="locationInfo">
 		<div class="col-md-12">
 			<div class="col-md-3">City:</div>
@@ -86,7 +116,9 @@
 			<input class="col-md-9 datepicker" type="date" id="dateInfo"/>
 		</div>
 
-		<button id="showAllLocation">allLocations</button>
+		<button class="btn btn-default" id="showAllLocation">All Locations</button>
+		<button class="btn btn-primary" id="editLocation">Edit Locations</button>
+		<button class="btn btn-danger" id="deleteLocation">Delete Locations</button>
 	</div>
     <div class="col-md-4" id="allLocations">
 
@@ -143,8 +175,79 @@
 			map.setZoom(5);
 			map.setCenter(centerCoordinates);
 		});
-		var users =  ${users};
-		users.sort(function(a, b){
+		$('#editLocation').click(function () {
+			var json = {
+				"city": $('#cityInfo').val(),
+				"geoLocation": { "latitude": $('#latitudeInfo').val(), "longitude": $('#longitudeInfo').val() },
+				"userId": "bob_0",
+				"country": $('#countryInfo').val(),
+				"countryCode":$('#countryCodeInfo').val(),
+				"wasVisited":$('#wasVisitedInfo').prop('checked'),
+				"locationUUID":$('#cityInfo').attr('locationUUID'),
+				"date": $('#dateInfo').val(),
+				"type": "placeLocation"}
+			$.ajax({
+				'type': 'POST',
+				'url': 'editLocation',
+				'data': JSON.stringify(json),
+				'dataType': 'json',
+				'contentType': 'application/json',
+				'charset':'utf-8',
+				success: function(res){
+					$('#myModal').find('.modal-body').text('Location was updated successfully')
+					$('#myModal').modal('show');
+					$('#addLocationDiv').hide();
+					$('#allLocations').show();
+					map.setZoom(5);
+					map.setCenter(centerCoordinates);
+				}, error:function (error) {
+					if((error.status==200)&&(error.readyState==4)){
+						$('#myModal').find('.modal-body').text('Location was updated successfully')
+						$('#myModal').modal('show');
+						$('#addLocationDiv').hide();
+						$('#allLocations').show();
+						map.setZoom(5);
+						map.setCenter(centerCoordinates);
+					} else{
+						console.log(error);
+					}
+				}
+			});
+		});
+		$('#deleteLocation').click(function () {
+			var json = {
+				"locationUUID":$('#cityInfo').attr('locationUUID'),
+				"type": "placeLocation"}
+			$.ajax({
+				'type': 'POST',
+				'url': 'deleteLocation',
+				'data': JSON.stringify(json),
+				'dataType': 'json',
+				'contentType': 'application/json',
+				'charset':'utf-8',
+				success: function(res){
+					$('#myModal').find('.modal-body').text('Location was deleted successfully')
+					$('#myModal').modal('show');
+					$('#addLocationDiv').hide();
+					$('#allLocations').show();
+					map.setZoom(5);
+					map.setCenter(centerCoordinates);
+				}, error:function (error) {
+					if((error.status==200)&&(error.readyState==4)){
+						$('#myModal').find('.modal-body').text('Location was deleted successfully')
+						$('#myModal').modal('show');
+						$('#addLocationDiv').hide();
+						$('#allLocations').show();
+						map.setZoom(5);
+						map.setCenter(centerCoordinates);
+					} else{
+						console.log(error);
+					}
+				}
+			});
+		});
+		var locations =  ${locations};
+		locations.sort(function(a, b){
 			var dateDiff = new Date(b.content.content.date) - new Date(a.content.content.date);
 			if(dateDiff==0){
 				b.content.content.geoLocation.content.longitude - a.content.content.geoLocation.content.longitude;
@@ -152,14 +255,15 @@
 				return dateDiff;
 			}
 		});
-		for(var i=0; i<users.length; i++){
-			if(users[i].content.content.geoLocation){
-				var location = { lat: parseFloat(users[i].content.content.geoLocation.content.latitude),
-					lng: parseFloat(users[i].content.content.geoLocation.content.longitude) }
-				addMarker(location, map, users[i].content.content.locationUUID);
-                printAllVisitedLocations(labels[labelIndex - 1], users[i]);
+		for(var i=0; i<locations.length; i++){
+			if(locations[i].content.content.geoLocation){
+				var location = { lat: parseFloat(locations[i].content.content.geoLocation.content.latitude),
+					lng: parseFloat(locations[i].content.content.geoLocation.content.longitude) }
+				addMarker(location, map, locations[i].content.content.locationUUID);
+                printAllVisitedLocations(labels[labelIndex - 1], locations[i]);
 			}
 		}
+		$('#allLocations').append('<button class="btn btn-default" id="zoomAllBtn">Zoom all</button>');
 
 		// Adds a marker to the map.
 		function addMarker(location, map, locationId) {
@@ -196,7 +300,58 @@
 			}
 		});
 	});
-
+		$('#sendLocationData').click(function(){
+			var locationObj = {};
+			locationObj.longitude = $('#longitude').val();
+			locationObj.latitude = $('#latitude').val();
+			var json = {
+				"city": $('#city').val(),
+				"geoLocation": { "latitude": locationObj.latitude, "longitude": locationObj.longitude },
+				"userId": "bob_0",
+				"country": $('#country').val(),
+				"countryCode":$('#countryCode').val(),
+				"wasVisited":$('#wasVisited').is(':checked'),
+				"locationUUID":guid(),
+				"date":$('#datepicker').val(),
+				"type": "placeLocation"}
+			$.ajax({
+				'type': 'POST',
+				'url': 'postLocation',
+				'data': JSON.stringify(json),
+				'dataType': 'json',
+				'contentType': 'application/json',
+				'charset':'utf-8',
+				success: function(res){
+					$('#myModal').find('.modal-body').text('Location was added successfully')
+					$('#myModal').modal('show');
+					$('#addLocationDiv').hide();
+					$('#allLocations').show();
+					map.setZoom(5);
+					map.setCenter(centerCoordinates);
+				}, error:function (error) {
+					$('#myModal').find('.modal-body').text('Location was added successfully')
+					if((error.status==200)&&(error.readyState==4)){
+						$('#myModal').modal('show');
+						$('#addLocationDiv').hide();
+						$('#allLocations').show();
+						map.setZoom(5);
+						map.setCenter(centerCoordinates);
+					} else{
+						console.log(error);
+					}
+				}
+			});
+		});
+		$('.location-input-group').click(function () {
+			console.log($(this));
+			var markerCenter = {lat: parseFloat($(this).attr('data-lat')), lng: parseFloat($(this).attr('data-lng'))};
+			map.setZoom(8);
+			map.setCenter(markerCenter);
+		});
+		$('#zoomAllBtn').click(function () {
+			map.setZoom(5);
+			map.setCenter(centerCoordinates);
+		})
 	}
 
 	function guid() {
@@ -226,6 +381,7 @@
 				$('#countryInfo').val(location.country);
 				$('#dateInfo').val(location.date);
 				$('#wasVisitedInfo').prop('checked', location.wasVisited);
+				$('#cityInfo').attr('locationUUID', location.locationUUID);
 			}
 		});
 		$('#allLocations').hide();
@@ -234,40 +390,16 @@
 
 	}
 	function printAllVisitedLocations(marker, user){
-        var container = $('#allLocations');
-        $('<div>'+marker+'</div>');
+        var container = $('<div class="input-group col-md-12 location-input-group" ' +
+				'data-lat="'+user.content.content.geoLocation.content.latitude+'"' +
+				'data-lng="'+user.content.content.geoLocation.content.longitude+'"' +
+				'></div>');
         container.append($('<div  class="col-md-1">'+marker+'</div>'));
-        container.append($('<div  class="col-md-5">'+user.content.content.city+'</div>'));
+        container.append($('<div  class="col-md-4">'+user.content.content.city+'</div>'));
         container.append($('<div  class="col-md-3">'+user.content.content.country+'</div>'));
-        container.append($('<div  class="col-md-3">'+user.content.content.date+'</div>'));
+        container.append($('<div  class="col-md-4">'+user.content.content.date+'</div>'));
+		$('#allLocations').append(container);
 	}
-	$('#sendLocationData').click(function(){
-			var locationObj = {};
-			locationObj.longitude = $('#longitude').val();
-			locationObj.latitude = $('#latitude').val();
-			var json = {
-				"city": $('#city').val(),
-				"geoLocation": { "latitude": locationObj.latitude, "longitude": locationObj.longitude },
-				"userId": "bob_0",
-				"country": $('#country').val(),
-				"countryCode":$('#countryCode').val(),
-				"wasVisited":$('#wasVisited').is(':checked'),
-				"locationUUID":guid(),
-				"date":$('#datepicker').val(),
-				"type": "placeLocation"}
-			$.ajax({
-				'type': 'POST',
-				'url': 'postLocation',
-				'data': JSON.stringify(json),
-				'dataType': 'json',
-				'contentType': 'application/json',
-					'charset':'utf-8',
-				'success': function(){
-					$('#addLocationDiv').hide();
-					$('#allLocations').show();
-				}
-			});
-		});
 	function addCity(result) {
     var founded = false;
     for (var i = 0; i < result.address_components.length; i++) {
@@ -301,6 +433,5 @@
             $('#city').val(result.formatted_address);
         }
     }
-
 </script>
 </html>

@@ -2,3 +2,9 @@
     text-align: center;
     color: red;
 }
+.location-input-group{
+    cursor: pointer;
+}
+.location-input-group:hover {
+    background-color: rgba(16, 3, 28, 0.14);
+}
