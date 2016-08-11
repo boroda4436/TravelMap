@@ -17,6 +17,8 @@ public class initializeDefaultBucket {
     public static final String GET_MERCHANT_LOCATIONS = "get_merchant_location";
     public static final String GET_PLACE_LOCATIONS = "get_place_location";
     public static final String GET_LOCATION_INFO = "get_location_info";
+    public static final String GET_USER_TOKEN = "get_user_token";
+    public static final String GET_USER_TOKEN_BY_EMAIL = "get_user_token_by_email";
     public static void initializeLandmarksViews(){
         BucketManager bucketManager = ConnectionManager.getBucket().bucketManager();
         DesignDocument isExist = bucketManager.getDesignDocument("landmarks");
@@ -40,7 +42,14 @@ public class initializeDefaultBucket {
                         ), DefaultView.create(GET_LOCATION_INFO,
                                 "function (doc, meta) { " +
                                         "  emit(doc.locationUUID, null);" +
-                                        "}"))
+                                        "}"
+                        ), DefaultView.create(GET_USER_TOKEN, "function (doc, meta) {\n" +
+                                "  if(doc.type=='userToken')\n" +
+                                "  emit(doc.value, null);\n" +
+                                "}"
+                        ), DefaultView.create(GET_USER_TOKEN_BY_EMAIL, "function (doc, meta) {\n" +
+                                "  emit(doc.user.email, null);\n" +
+                                "}"))
                 );
         if(isExist==null) {
             bucketManager.insertDesignDocument(designDoc);

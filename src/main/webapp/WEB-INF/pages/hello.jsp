@@ -47,7 +47,6 @@
 </div><!-- /.modal -->
 <div class="header">
 	<h1>Welcome to TravelMap, ${userName}</h1>
-	<button class="btn btn-default" id="addLocationBtn">Add point</button>
 </div>
 <div class="col-md-12 container">
 	<div class="col-md-8"><div id="map" style="width: 100%; height: 500px"></div></div>
@@ -84,6 +83,7 @@
 
 		<div class="col-md-12">
 			<button class="btn btn-primary" id="sendLocationData">Submit</button>
+			<button class="btn btn-default showAllLocation">All Locations</button>
 		</div>
 	</div>
 	<div class="col-md-4" style="display: none" id="locationInfo">
@@ -116,7 +116,7 @@
 			<input class="col-md-9 datepicker" type="date" id="dateInfo"/>
 		</div>
 
-		<button class="btn btn-default" id="showAllLocation">All Locations</button>
+		<button class="btn btn-default showAllLocation">All Locations</button>
 		<button class="btn btn-primary" id="editLocation">Edit Locations</button>
 		<button class="btn btn-danger" id="deleteLocation">Delete Locations</button>
 	</div>
@@ -129,12 +129,13 @@
 </div>
 </body>
 <script>
+	var locations =  ${locations};
 	function initMap() {
 		// In the following example, markers appear when the user clicks on the map.
 		// Each marker is labeled with a single alphabetical character.
 		var labels = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
 		var labelIndex = 0;
-		var myLatLng = {lat: -25.363, lng: 131.044};
+		var markers = [];
 		var mapDiv = document.getElementById('map');
 		var centerCoordinates = {lat: 50.449335, lng: 30.525155};
 		var map = new google.maps.Map(mapDiv, {
@@ -144,31 +145,8 @@
 		var geocoder = new google.maps.Geocoder;
 		// This event listener calls addMarker() when the map is clicked.
 
-		$('#addLocationBtn').click(function(){
-			$('#allLocations').hide();
-			$('#addLocationDiv').show();
-			$('#locationInfo').hide();
-			google.maps.event.addListenerOnce(map, 'click', function(event) {
-				addMarker(event.latLng, map, null);
-				$('#longitude').val(event.latLng.lng().toFixed(6));
-				$('#latitude').val(event.latLng.lat().toFixed(6));
-				geocoder.geocode({'location': event.latLng}, function(results, status) {
-					if (status === google.maps.GeocoderStatus.OK) {
-						if (results[1]) {
-                            addCity(results[1]);
-						} else {
-							window.alert('No results found');
-						}
-						if(results[3] && results[3].address_components){
-							addCountry(results[3]);
-						}
-					} else {
-						window.alert('Geocoder failed due to: ' + status);
-					}
-				});
-			});
-		});
-		$('#showAllLocation').click(function () {
+
+		$('.showAllLocation').click(function () {
 			$('#allLocations').show();
 			$('#addLocationDiv').hide();
 			$('#locationInfo').hide();
@@ -193,19 +171,17 @@
 				'dataType': 'json',
 				'contentType': 'application/json',
 				'charset':'utf-8',
-				success: function(res){
-					$('#myModal').find('.modal-body').text('Location was updated successfully')
-					$('#myModal').modal('show');
-					$('#addLocationDiv').hide();
-					$('#allLocations').show();
-					map.setZoom(5);
-					map.setCenter(centerCoordinates);
-				}, error:function (error) {
+				error:function (error) {
 					if((error.status==200)&&(error.readyState==4)){
-						$('#myModal').find('.modal-body').text('Location was updated successfully')
+						$('#myModal').find('.modal-body').text('Location was updated successfully');
 						$('#myModal').modal('show');
 						$('#addLocationDiv').hide();
-						$('#allLocations').show();
+						$('#allLocations').hide();
+						deleteMarkers();
+						addLocationsMarkers();
+						zoomToMarker();
+						zoomAll();
+						addLocation();
 						map.setZoom(5);
 						map.setCenter(centerCoordinates);
 					} else{
@@ -225,19 +201,18 @@
 				'dataType': 'json',
 				'contentType': 'application/json',
 				'charset':'utf-8',
-				success: function(res){
-					$('#myModal').find('.modal-body').text('Location was deleted successfully')
-					$('#myModal').modal('show');
-					$('#addLocationDiv').hide();
-					$('#allLocations').show();
-					map.setZoom(5);
-					map.setCenter(centerCoordinates);
-				}, error:function (error) {
+				error:function (error) {
 					if((error.status==200)&&(error.readyState==4)){
 						$('#myModal').find('.modal-body').text('Location was deleted successfully')
 						$('#myModal').modal('show');
 						$('#addLocationDiv').hide();
+						$('#locationInfo').hide();
 						$('#allLocations').show();
+						deleteMarkers();
+						addLocationsMarkers();
+						zoomToMarker();
+						zoomAll();
+						addLocation();
 						map.setZoom(5);
 						map.setCenter(centerCoordinates);
 					} else{
@@ -246,32 +221,17 @@
 				}
 			});
 		});
-		var locations =  ${locations};
-		locations.sort(function(a, b){
-			var dateDiff = new Date(b.content.content.date) - new Date(a.content.content.date);
-			if(dateDiff==0){
-				b.content.content.geoLocation.content.longitude - a.content.content.geoLocation.content.longitude;
-			} else{
-				return dateDiff;
-			}
-		});
-		for(var i=0; i<locations.length; i++){
-			if(locations[i].content.content.geoLocation){
-				var location = { lat: parseFloat(locations[i].content.content.geoLocation.content.latitude),
-					lng: parseFloat(locations[i].content.content.geoLocation.content.longitude) }
-				addMarker(location, map, locations[i].content.content.locationUUID);
-                printAllVisitedLocations(labels[labelIndex - 1], locations[i]);
-			}
-		}
-		$('#allLocations').append('<button class="btn btn-default" id="zoomAllBtn">Zoom all</button>');
+		addLocationsMarkers();
 
 		// Adds a marker to the map.
 		function addMarker(location, map, locationId) {
 			// Add the marker at the clicked location, and add the next-available label
 			// from the array of alphabetical characters.
+			var title = labels[labelIndex++ % labels.length];
+			if(labelIndex>labels.length) title = labelIndex - labels.length;
 			var marker = new google.maps.Marker({
 				position: location,
-				label: labels[labelIndex++ % labels.length],
+				label: title,
 				map: map,
 				locationId:locationId
 			});
@@ -289,6 +249,7 @@
 				map.setCenter(marker.getPosition());
 				printLocationInfo(marker.locationId, map);
 			});
+			markers.push(marker);
 		}
 		$(document).ready(function(){
 		$('#dateLine').hide();
@@ -299,7 +260,7 @@
 				$('#dateLine').hide();
 			}
 		});
-	});
+		});
 		$('#sendLocationData').click(function(){
 			var locationObj = {};
 			locationObj.longitude = $('#longitude').val();
@@ -342,16 +303,79 @@
 				}
 			});
 		});
-		$('.location-input-group').click(function () {
-			console.log($(this));
-			var markerCenter = {lat: parseFloat($(this).attr('data-lat')), lng: parseFloat($(this).attr('data-lng'))};
-			map.setZoom(8);
-			map.setCenter(markerCenter);
-		});
-		$('#zoomAllBtn').click(function () {
-			map.setZoom(5);
-			map.setCenter(centerCoordinates);
-		})
+		zoomAll();
+		zoomToMarker();
+		addLocation();
+		function zoomAll() {
+			$('#zoomAllBtn').click(function () {
+				map.setZoom(5);
+				map.setCenter(centerCoordinates);
+			});
+		}
+		function addLocationsMarkers() {
+			locations.sort(function(a, b){
+				var dateDiff = new Date(b.content.content.date) - new Date(a.content.content.date);
+				if(dateDiff==0){
+					b.content.content.geoLocation.content.longitude - a.content.content.geoLocation.content.longitude;
+				} else{
+					return dateDiff;
+				}
+			});
+			for(var i=0; i<locations.length; i++){
+				if(locations[i].content.content.geoLocation){
+					var location = { lat: parseFloat(locations[i].content.content.geoLocation.content.latitude),
+						lng: parseFloat(locations[i].content.content.geoLocation.content.longitude) }
+					addMarker(location, map, locations[i].content.content.locationUUID);
+					printAllVisitedLocations(labels[labelIndex - 1], locations[i]);
+				}
+			}
+			$('#allLocations').append('<button class="btn btn-default" id="zoomAllBtn">Zoom all</button>');
+			$('#allLocations').append('	<button class="btn btn-default" id="addLocationBtn">Add point</button>');
+		}
+		function addLocation() {
+			$('#addLocationBtn').click(function(){
+				$('#allLocations').hide();
+				$('#addLocationDiv').show();
+				$('#locationInfo').hide();
+				google.maps.event.addListenerOnce(map, 'click', function(event) {
+					addMarker(event.latLng, map, null);
+					$('#longitude').val(event.latLng.lng().toFixed(6));
+					$('#latitude').val(event.latLng.lat().toFixed(6));
+					geocoder.geocode({'location': event.latLng}, function(results, status) {
+						if (status === google.maps.GeocoderStatus.OK) {
+							if (results[1]) {
+								addCity(results[1]);
+							} else {
+								window.alert('No results found');
+							}
+							if(results[3] && results[3].address_components){
+								addCountry(results[3]);
+							}
+						} else {
+							window.alert('Geocoder failed due to: ' + status);
+						}
+					});
+				});
+			});
+		}
+
+		// Deletes all markers in the array by removing references to them.
+		function deleteMarkers() {
+			for (var i = 0; i < markers.length; i++) {
+				markers[i].setMap(null);
+			}
+			labelIndex = 0;
+			$('#allLocations').empty();
+			markers = [];
+		}
+		function zoomToMarker() {
+			$('.location-input-group').click(function () {
+				console.log($(this));
+				var markerCenter = {lat: parseFloat($(this).attr('data-lat')), lng: parseFloat($(this).attr('data-lng'))};
+				map.setZoom(8);
+				map.setCenter(markerCenter);
+			});
+		}
 	}
 
 	function guid() {

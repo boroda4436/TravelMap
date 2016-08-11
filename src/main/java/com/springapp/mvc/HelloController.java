@@ -28,7 +28,11 @@ public class HelloController {
 
 	@RequestMapping(method = RequestMethod.GET)
 	public String printWelcome(ModelMap model) {
-//		initializeDefaultBucket.initializeLandmarksViews();
+		initializeDefaultBucket.initializeLandmarksViews();
+		return "redirect:/index";
+	}
+	@RequestMapping(value = "index",method = RequestMethod.GET)
+	public String index(ModelMap model) {
 		model.addAttribute("userName", "Bohdan");
 		model.addAttribute("locations",new Gson().toJson(locationService.getAll()));
 		return "hello";
@@ -43,22 +47,21 @@ public class HelloController {
 										  ModelMap model) {
 		JsonObject data = JsonObject.fromJson(jsonObject);
 		crudService.insert(JsonDocument.create("placeLocation::" + data.getString("locationUUID"), data));
-		model.addAttribute("locations",new Gson().toJson(locationService.getAll()));
-		return "hello";
+		return "redirect:/index";
 	}
 	@RequestMapping(value = "editLocation",method = RequestMethod.POST)
 	public String editLocation(@RequestBody String locationEdit,
 								  ModelMap model) {
 		JsonObject data = JsonObject.fromJson(locationEdit);
 		crudService.update(data);
-		return "hello";
+		return "redirect:/index";
 	}
 	@RequestMapping(value = "deleteLocation",method = RequestMethod.POST)
 	public String deleteLocation(@RequestBody String locationEdit,
 							   ModelMap model) {
 		JsonObject data = JsonObject.fromJson(locationEdit);
 		crudService.delete(data);
-		return "hello";
+		return "redirect:/index";
 	}
 	@ResponseBody
 	@RequestMapping(value = "getLocationInfo", method = RequestMethod.POST)
