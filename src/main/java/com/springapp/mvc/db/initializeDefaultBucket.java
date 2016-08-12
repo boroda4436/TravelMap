@@ -38,7 +38,7 @@ public class initializeDefaultBucket {
                         ), DefaultView.create(GET_PLACE_LOCATIONS,
                                 "function (doc, meta) { " +
                                         "if (doc.type == 'placeLocation') { " +
-                                        "emit(meta.id, null); } }"
+                                        "emit(doc.userEmail, null); } }"
                         ), DefaultView.create(GET_LOCATION_INFO,
                                 "function (doc, meta) { " +
                                         "  emit(doc.locationUUID, null);" +

@@ -6,6 +6,7 @@ import com.couchbase.client.java.document.JsonDocument;
 import com.couchbase.client.java.document.json.JsonObject;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.springapp.mvc.ctrl.SecurityContext;
 import com.springapp.mvc.ctrl.error.IncorrectPasswordException;
 import com.springapp.mvc.ctrl.error.UserExistException;
 import com.springapp.mvc.ctrl.error.UserNotFoundException;
@@ -55,8 +56,8 @@ public class AuthServiceImpl implements AuthService {
     @Override
     public UserToken signIn(SignInRequest request) throws UserExistException {
         List<JsonDocument> list = locationService.fromViewWithStringKey(request.email,"landmarks", GET_USER_TOKEN_BY_EMAIL);
-        JsonDocument res = list==null?null:list.get(0);
-        if(res!=null) throw new UserExistException("user with such email exist!");
+        JsonDocument res = list==null?null:list.size()>0?list.get(0):null;
+        if(res!=null) throw new UserExistException("User with such email already exist!");
         String slat = CryptoHelper.newSlat();
         String password = CryptoHelper.GetPasswordHash(request.password,slat);
         User user = new User();
@@ -89,6 +90,7 @@ public class AuthServiceImpl implements AuthService {
         }
         if(userToken!=null){
             if(CryptoHelper.CheckPassword(request.password, userToken.user.slat, userToken.user.password)){
+                SecurityContext.getContext().setUserToken(userToken);
                 return userToken;
             } else throw new IncorrectPasswordException("Wrong password! Please, try again");
         }

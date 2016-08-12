@@ -4,7 +4,9 @@ import com.couchbase.client.java.document.JsonDocument;
 import com.couchbase.client.java.document.json.JsonArray;
 import com.couchbase.client.java.document.json.JsonObject;
 import com.google.gson.Gson;
+import com.springapp.mvc.ctrl.SecurityContext;
 import com.springapp.mvc.db.initializeDefaultBucket;
+import com.springapp.mvc.dto.UserToken;
 import com.springapp.mvc.service.CrudService;
 import com.springapp.mvc.service.LocationService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,11 +31,14 @@ public class HelloController {
 	@RequestMapping(method = RequestMethod.GET)
 	public String printWelcome(ModelMap model) {
 		initializeDefaultBucket.initializeLandmarksViews();
+		if(SecurityContext.getContext().getUserToken()==null) return "redirect:/auth/login";
 		return "redirect:/index";
 	}
 	@RequestMapping(value = "index",method = RequestMethod.GET)
 	public String index(ModelMap model) {
-		model.addAttribute("userName", "Bohdan");
+		UserToken userToken = SecurityContext.getContext().getUserToken();
+		if(userToken==null) return "redirect:/auth/login";
+		model.addAttribute("userName", userToken.user.profile.firstName + " " + userToken.user.profile.lastName);
 		model.addAttribute("locations",new Gson().toJson(locationService.getAll()));
 		return "hello";
 	}
@@ -46,6 +51,7 @@ public class HelloController {
 	public String postNewLocation(@RequestBody String jsonObject,
 										  ModelMap model) {
 		JsonObject data = JsonObject.fromJson(jsonObject);
+		data.put("userEmail", SecurityContext.getContext().getUserToken().user.email);
 		crudService.insert(JsonDocument.create("placeLocation::" + data.getString("locationUUID"), data));
 		return "redirect:/index";
 	}

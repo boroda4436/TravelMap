@@ -6,4 +6,6 @@ package com.springapp.mvc.ctrl.viewmodel;
 public class SignInRequest {
     public String email;
     public String password;
+    public String firstName;
+    public String lastName;
 }

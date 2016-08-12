@@ -20,9 +20,15 @@
                 <h1 class="text-center">Registration</h1>
             </div>
             <div class="modal-body">
-                <form class="form col-md-12 center-block">
+                <div class="form col-md-12 center-block">
                     <div class="form-group">
                         <input type="text" id="registrationEmail" class="form-control input-lg" placeholder="Email">
+                    </div>
+                    <div class="form-group">
+                        <input type="text" id="firstName" class="form-control input-lg" placeholder="First Name">
+                    </div>
+                    <div class="form-group">
+                        <input type="text" id="lastName" class="form-control input-lg" placeholder="Last Name">
                     </div>
                     <div class="form-group">
                         <input type="password" id="registrationPassword" class="form-control input-lg" placeholder="Password">
@@ -34,7 +40,7 @@
                         <button class="btn btn-primary btn-lg btn-block" id="registrationBtn">Confirm</button>
                         <span class="pull-right"><a href="login">Login</a></span><span><a href="#">Need help?</a></span>
                     </div>
-                </form>
+                </div>
             </div>
             <div class="modal-footer">
                 <div class="col-md-12">
@@ -56,26 +62,60 @@
         });
     });
     function sendLoginRequest() {
+        $('#errorMessage').remove();
         var request = {
             email: $('#registrationEmail').val(),
-            password : $('#registrationPassword').val()
+            password : $('#registrationPassword').val(),
+            firstName: $('#firstName').val(),
+            lastName: $('#lastName').val()
         };
-//        request.email = $('#registrationEmail').val();
-//        request.password = $('#registrationPassword').val();
-        var repeatPassword = $('#registrationPasswordRepeat').val();
-        $.ajax({
+
+        if(checkInputFields()){$.ajax({
             url: "signin",
             method: "POST",
             contentType : 'application/json; charset=utf-8',
             data: JSON.stringify(request),
             dataType: "json",
             success: function (data) {
-                console.log(1);
+                if(data.exception){
+                    $($('.form.col-md-12.center-block')[0])
+                            .append('<div class="form-group" id="errorMessage" style="color:red; text-align:center; ' +
+                                    'font-weight:bold">'+data.exception.detailMessage+'</div>');
+                } else{
+                    location.href = "/index.html"
+                }
             },
             error: function (err) {
-                console.log(2);
+                console.log(err);
             }
-        });
+        });}
+    }
+
+    function checkInputFields() {
+        var password = $('#registrationPassword').val();
+        var repeatPassword = $('#registrationPasswordRepeat').val();
+        var email = $('#registrationEmail').val();
+        var firstName = $('#firstName').val();
+        var lastName = $('#lastName').val();
+        if(password===repeatPassword){
+            if(email==""||
+                    firstName==""||
+                    lastName=="" ||
+                    repeatPassword==""||
+                    password ==""){
+                $($('.form.col-md-12.center-block')[0])
+                        .append('<div class="form-group" id="errorMessage" style="color:red; text-align:center; ' +
+                                'font-weight:bold">Please fill all fields!</div>');
+                return false;
+            } else {
+                return true;
+            }
+        } else {
+            $($('.form.col-md-12.center-block')[0])
+                    .append('<div class="form-group" id="errorMessage" style="color:red; text-align:center; ' +
+                            'font-weight:bold">Passwords does not match! Please, try again</div>');
+            return false;
+        }
     }
 </script>
 </html>

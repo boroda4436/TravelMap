@@ -45,8 +45,9 @@
 	</div><!-- /.modal-dialog -->
 
 </div><!-- /.modal -->
-<div class="header">
-	<h1>Welcome to TravelMap, ${userName}</h1>
+<div class="header col-md-12">
+	<h1 class="col-md-11">Welcome to TravelMap, ${userName}</h1>
+	<button id="logOut" class="col-md-1">LogOut</button>
 </div>
 <div class="col-md-12 container">
 	<div class="col-md-8"><div id="map" style="width: 100%; height: 500px"></div></div>
@@ -221,6 +222,9 @@
 				}
 			});
 		});
+		$('#logOut').click(function () {
+			location.href = "/auth/logOut.html";
+		});
 		addLocationsMarkers();
 
 		// Adds a marker to the map.
@@ -268,7 +272,7 @@
 			var json = {
 				"city": $('#city').val(),
 				"geoLocation": { "latitude": locationObj.latitude, "longitude": locationObj.longitude },
-				"userId": "bob_0",
+				"userEmail": "",
 				"country": $('#country').val(),
 				"countryCode":$('#countryCode').val(),
 				"wasVisited":$('#wasVisited').is(':checked'),

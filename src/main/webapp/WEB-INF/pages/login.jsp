@@ -20,7 +20,7 @@
           <h1 class="text-center">Login</h1>
       </div>
       <div class="modal-body">
-          <form class="form col-md-12 center-block">
+          <div class="form col-md-12 center-block">
             <div class="form-group">
               <input type="text" id="email" class="form-control input-lg" placeholder="Email">
             </div>
@@ -31,7 +31,7 @@
               <button class="btn btn-primary btn-lg btn-block " id="loginBtn">Sign In</button>
               <span class="pull-right"><a href="signin">Register</a></span><span><a href="#">Need help?</a></span>
             </div>
-          </form>
+          </div>
       </div>
       <div class="modal-footer">
           <div class="col-md-12">
@@ -47,11 +47,11 @@
 <script>
     $(document).ready(function () {
         $('#loginBtn').click(function () {
-            console.log('OK!');
             sendLoginRequest();
         });
     });
     function sendLoginRequest() {
+        $('#errorMessage').remove();
         var request = {};
         request.email = $('#email').val();
         request.password = $('#password').val();
@@ -62,10 +62,16 @@
             data: JSON.stringify(request),
             dataType: "json",
             success: function (data) {
-                console.log(1);
+                if(data.exception){
+                    $($('.form.col-md-12.center-block')[0])
+                            .append('<div class="form-group" id="errorMessage" style="color:red; text-align:center; ' +
+                                    'font-weight:bold">'+data.exception.detailMessage+'</div>');
+                } else{
+                    location.href = "/index.html"
+                }
             },
             error: function (err) {
-                console.log(2);
+                console.log(err);
             }
         });
     }
