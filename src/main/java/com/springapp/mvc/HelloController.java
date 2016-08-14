@@ -5,6 +5,7 @@ import com.couchbase.client.java.document.json.JsonArray;
 import com.couchbase.client.java.document.json.JsonObject;
 import com.google.gson.Gson;
 import com.springapp.mvc.ctrl.SecurityContext;
+import com.springapp.mvc.ctrl.viewmodel.LocationResponse;
 import com.springapp.mvc.db.initializeDefaultBucket;
 import com.springapp.mvc.dto.UserToken;
 import com.springapp.mvc.service.CrudService;
@@ -30,7 +31,7 @@ public class HelloController {
 
 	@RequestMapping(method = RequestMethod.GET)
 	public String printWelcome(ModelMap model) {
-		initializeDefaultBucket.initializeLandmarksViews();
+//		initializeDefaultBucket.initializeLandmarksViews();
 		if(SecurityContext.getContext().getUserToken()==null) return "redirect:/auth/login";
 		return "redirect:/index";
 	}
@@ -47,27 +48,37 @@ public class HelloController {
 		locationService.getAll();
 		return "addLocation";
 	}
+	@ResponseBody
 	@RequestMapping(value = "postLocation",method = RequestMethod.POST)
-	public String postNewLocation(@RequestBody String jsonObject,
+	public LocationResponse postNewLocation(@RequestBody String jsonObject,
 										  ModelMap model) {
 		JsonObject data = JsonObject.fromJson(jsonObject);
 		data.put("userEmail", SecurityContext.getContext().getUserToken().user.email);
 		crudService.insert(JsonDocument.create("placeLocation::" + data.getString("locationUUID"), data));
-		return "redirect:/index";
+		LocationResponse response = new LocationResponse();
+		response.locations = locationService.getAll();
+		return response;
 	}
+	@ResponseBody
 	@RequestMapping(value = "editLocation",method = RequestMethod.POST)
-	public String editLocation(@RequestBody String locationEdit,
-								  ModelMap model) {
+	public LocationResponse editLocation(@RequestBody String locationEdit,
+										 ModelMap model) {
 		JsonObject data = JsonObject.fromJson(locationEdit);
+		data.put("userEmail", SecurityContext.getContext().getUserToken().user.email);
 		crudService.update(data);
-		return "redirect:/index";
+		LocationResponse response = new LocationResponse();
+		response.locations = locationService.getAll();
+		return response;
 	}
+	@ResponseBody
 	@RequestMapping(value = "deleteLocation",method = RequestMethod.POST)
-	public String deleteLocation(@RequestBody String locationEdit,
+	public LocationResponse deleteLocation(@RequestBody String locationEdit,
 							   ModelMap model) {
 		JsonObject data = JsonObject.fromJson(locationEdit);
 		crudService.delete(data);
-		return "redirect:/index";
+		LocationResponse response = new LocationResponse();
+		response.locations = locationService.getAll();
+		return response;
 	}
 	@ResponseBody
 	@RequestMapping(value = "getLocationInfo", method = RequestMethod.POST)

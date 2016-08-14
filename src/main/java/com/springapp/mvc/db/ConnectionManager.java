@@ -4,6 +4,8 @@ import com.couchbase.client.java.Bucket;
 import com.couchbase.client.java.Cluster;
 import com.couchbase.client.java.CouchbaseCluster;
 import com.couchbase.client.java.document.JsonDocument;
+import com.couchbase.client.java.env.CouchbaseEnvironment;
+import com.couchbase.client.java.env.DefaultCouchbaseEnvironment;
 import com.couchbase.client.java.view.AsyncViewResult;
 import com.couchbase.client.java.view.AsyncViewRow;
 import com.couchbase.client.java.view.Stale;
@@ -17,6 +19,7 @@ import rx.functions.Func1;
 import java.util.ArrayList;
 import java.util.NoSuchElementException;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 
 import static com.couchbase.client.java.query.Select.select;
 
@@ -33,7 +36,7 @@ public class ConnectionManager {
     }
 
     static Cluster cluster = CouchbaseCluster.create();
-    static Bucket bucket = cluster.openBucket("default");
+    static Bucket bucket = cluster.openBucket("default", 2, TimeUnit.MINUTES);
 
     public static void disconnect() {
         cluster.disconnect();
@@ -52,7 +55,6 @@ public class ConnectionManager {
         }
         return response;
     }
-
 
     public static ArrayList<AsyncViewRow> getView(String designDoc, String view) {
         final CountDownLatch latch = new CountDownLatch(1);

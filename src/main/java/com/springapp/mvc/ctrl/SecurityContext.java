@@ -14,7 +14,7 @@ public class SecurityContext {
         return context;
     }
     public void setUserToken(UserToken  userToken) {
-        if(userToken.validTill>System.currentTimeMillis()) getContext().userToken = userToken;
+        getContext().userToken = userToken;
 
     }
 

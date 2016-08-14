@@ -59,7 +59,7 @@ public class AuthCtrl {
         return response;
     }
 
-    @RequestMapping(value = "logOut", method = RequestMethod.POST)
+    @RequestMapping(value = "logOut", method = RequestMethod.GET)
     public String LogOut(){
         SecurityContext.getContext().setUserToken(null);
         return "redirect:/index";

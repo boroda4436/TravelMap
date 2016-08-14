@@ -172,6 +172,22 @@
 				'dataType': 'json',
 				'contentType': 'application/json',
 				'charset':'utf-8',
+				success: function (res) {
+					if(res.locations){
+						locations = res.locations;
+					}
+					$('#myModal').find('.modal-body').text('Location was updated successfully');
+					$('#myModal').modal('show');
+					$('#addLocationDiv').hide();
+					$('#allLocations').hide();
+					deleteMarkers();
+					addLocationsMarkers();
+					zoomToMarker();
+					zoomAll();
+					addLocation();
+					map.setZoom(5);
+					map.setCenter(centerCoordinates);
+				},
 				error:function (error) {
 					if((error.status==200)&&(error.readyState==4)){
 						$('#myModal').find('.modal-body').text('Location was updated successfully');
@@ -202,6 +218,23 @@
 				'dataType': 'json',
 				'contentType': 'application/json',
 				'charset':'utf-8',
+				success: function (res) {
+					if(res.locations){
+						locations = res.locations;
+					}
+					$('#myModal').find('.modal-body').text('Location was deleted successfully')
+					$('#myModal').modal('show');
+					$('#addLocationDiv').hide();
+					$('#locationInfo').hide();
+					$('#allLocations').show();
+					deleteMarkers();
+					addLocationsMarkers();
+					zoomToMarker();
+					zoomAll();
+					addLocation();
+					map.setZoom(5);
+					map.setCenter(centerCoordinates);
+				},
 				error:function (error) {
 					if((error.status==200)&&(error.readyState==4)){
 						$('#myModal').find('.modal-body').text('Location was deleted successfully')
@@ -287,10 +320,18 @@
 				'contentType': 'application/json',
 				'charset':'utf-8',
 				success: function(res){
-					$('#myModal').find('.modal-body').text('Location was added successfully')
+					if(res.locations){
+						locations = res.locations;
+					}
+					$('#myModal').find('.modal-body').text('Location was added successfully');
 					$('#myModal').modal('show');
 					$('#addLocationDiv').hide();
 					$('#allLocations').show();
+					deleteMarkers();
+					addLocationsMarkers();
+					zoomToMarker();
+					zoomAll();
+					addLocation();
 					map.setZoom(5);
 					map.setCenter(centerCoordinates);
 				}, error:function (error) {
