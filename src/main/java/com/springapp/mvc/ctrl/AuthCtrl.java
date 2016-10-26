@@ -1,5 +1,6 @@
 package com.springapp.mvc.ctrl;
 
+import com.springapp.mvc.config.SecurityContext;
 import com.springapp.mvc.ctrl.error.IncorrectPasswordException;
 import com.springapp.mvc.ctrl.error.UserExistException;
 import com.springapp.mvc.ctrl.error.UserNotFoundException;
@@ -7,7 +8,6 @@ import com.springapp.mvc.ctrl.viewmodel.LogInRequest;
 import com.springapp.mvc.ctrl.viewmodel.LogInResponse;
 import com.springapp.mvc.ctrl.viewmodel.SignInRequest;
 import com.springapp.mvc.ctrl.viewmodel.SingInResponse;
-import com.springapp.mvc.dto.UserToken;
 import com.springapp.mvc.service.AuthService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;

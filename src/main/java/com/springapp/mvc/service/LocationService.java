@@ -9,4 +9,6 @@ import java.util.List;
  */
 public interface LocationService extends BaseService {
     List<JsonDocument> getAll();
+    List<JsonDocument> getAllByUser(String email);
+
 }

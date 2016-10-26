@@ -1,10 +1,9 @@
-package com.springapp.mvc;
+package com.springapp.mvc.ctrl;
 
 import com.couchbase.client.java.document.JsonDocument;
-import com.couchbase.client.java.document.json.JsonArray;
 import com.couchbase.client.java.document.json.JsonObject;
 import com.google.gson.Gson;
-import com.springapp.mvc.ctrl.SecurityContext;
+import com.springapp.mvc.config.SecurityContext;
 import com.springapp.mvc.ctrl.viewmodel.LocationResponse;
 import com.springapp.mvc.db.initializeDefaultBucket;
 import com.springapp.mvc.dto.UserToken;
@@ -15,15 +14,13 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import static com.springapp.mvc.db.initializeDefaultBucket.GET_LOCATION_INFO;
 
 @Controller
 @RequestMapping("/")
-public class HelloController {
+public class HelloCtrl {
 	@Autowired
 	CrudService crudService;
 	@Autowired
@@ -31,7 +28,7 @@ public class HelloController {
 
 	@RequestMapping(method = RequestMethod.GET)
 	public String printWelcome(ModelMap model) {
-//		initializeDefaultBucket.initializeLandmarksViews();
+		initializeDefaultBucket.initializeLandmarksViews();
 		if(SecurityContext.getContext().getUserToken()==null) return "redirect:/auth/login";
 		return "redirect:/index";
 	}

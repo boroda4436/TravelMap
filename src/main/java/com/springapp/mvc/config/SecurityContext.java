@@ -1,7 +1,6 @@
-package com.springapp.mvc.ctrl;
+package com.springapp.mvc.config;
 
 import com.springapp.mvc.dto.UserToken;
-import org.springframework.stereotype.Component;
 
 public class SecurityContext {
     private static SecurityContext context;
