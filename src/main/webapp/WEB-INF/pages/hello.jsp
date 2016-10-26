@@ -4,12 +4,13 @@
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.2/jquery.min.js"></script>
 	<script src="http://code.jquery.com/ui/1.10.2/jquery-ui.js"></script>
 	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
-	<script src="resources/lib/js/bootstrap-datepicker.js"></script>
+	<script src="/resources/resources/lib/js/bootstrap-datepicker.js"></script>
 
-	<link rel="stylesheet" href="resources/css/main.css" type="text/css">
+	<link rel="stylesheet" href="/resources/resources/css/main.css" type="text/css">
 	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" >
 	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap-theme.min.css" >
-	<link rel="stylesheet" href="resources/lib/css/datepicker.css" type="text/css">
+	<link rel="stylesheet" href="/resources/resources/lib/css/datepicker.css" type="text/css">
+	<script src="/resources/resources/lib/js/bootstrap.min.js"></script>
 
 
 </head>
