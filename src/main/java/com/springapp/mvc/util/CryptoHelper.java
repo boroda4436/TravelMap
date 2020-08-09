@@ -65,14 +65,14 @@ public class CryptoHelper {
     }
 
     public static String base64Encode(String token) {
-        return  getEncoder().encodeToString(token.getBytes());
+        return getEncoder().encodeToString(token.getBytes());
     }
 
 
     public static String base64Decode(String token) {
         try{
             return  new String( getDecoder().decode(token), "UTF-8");
-        }catch(UnsupportedEncodingException e){
+        } catch(UnsupportedEncodingException e){
             return "";
         }
     }
